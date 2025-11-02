@@ -48,7 +48,7 @@ visitas_sesion = visitas_sesion
     ? parseInt(visitas_sesion) + 1
     : visitas_sesion = 1
 
-document.getElementById("visitas_sesion").textContent = `Visita número ${visitas_sesion} de hoy`
+document.getElementById("visitas_sesion").textContent = `Recarga número ${visitas_sesion} de la sesión`
 
 sessionStorage.setItem("visitas_sesion", visitas_sesion)
 
@@ -71,7 +71,7 @@ entrenamientos_totales = entrenamientos_totales
 
 if(visitas_sesion === 1) entrenamientos_totales+=1
 
-document.getElementById("entrenamientos_totales").textContent = `Entrenamientos completados: ${entrenamientos_totales}`
+document.getElementById("entrenamientos_totales").textContent = `Entrenamientos totales completados: ${entrenamientos_totales}`
 
 localStorage.setItem("entrenamientos_totales", entrenamientos_totales)
 
@@ -83,4 +83,80 @@ localStorage.setItem("entrenamientos_totales", entrenamientos_totales)
 - Guarda la fecha y hora ACTUAL como string ISO para la próxima vez
 - Si NO existe, no muestres nada en ese `<h3>`
 */
+
+let ultimo_entrenamiento = localStorage.getItem("ultimo_entrenamiento")
+
+if(ultimo_entrenamiento) {
+    let entreno_actual = new Date(ultimo_entrenamiento)
+    document.getElementById("ultimo_entreno").textContent = `Último entrenamiento: ${entreno_actual.toLocaleString("es-ES")}`
+}
+
+let fecha_actual = new Date()
+
+localStorage.setItem("ultimo_entrenamiento", fecha_actual.toISOString())
+
+/*
+     **GRUPO MUSCULAR FAVORITO** (localStorage)
+- Si existe `musculo_favorito`, muéstralo con un alert
+- Si NO existe, pídelo con un `prompt` (ejemplo: "pecho", "espalda", "piernas", etc.)
+- Muestra en `<h3 id="musculo_favorito">` el texto: `"Grupo muscular favorito: [MUSCULO]"`
+- Guarda el valor en localStorage
+
+ */
+
+let musculo_favorito = localStorage.getItem("musculo_favorito")
+
+musculo_favorito
+    ? alert(musculo_favorito)
+    : musculo_favorito= prompt("¿Cual es tu grupo muscular favorito?")
+
+document.getElementById("musculo_favorito").textContent = `Grupo muscular favorito: ${musculo_favorito}`
+
+localStorage.setItem("musculo_favorito", musculo_favorito)
+
+/*
+    **RACHA DE DÍAS** (localStorage + Date + Math)
+- Esta es la parte más compleja. Debes calcular cuántos días consecutivos ha entrenado el usuario.
+- Si existe `fecha_ultimo_acceso`:
+  - Conviértela a Date
+  - Calcula la diferencia en días con la fecha actual
+  - Si la diferencia es 1 día o menos (entrenó ayer o hoy), incrementa `racha_dias`
+  - Si la diferencia es mayor a 1 día, reinicia `racha_dias` a 1
+- Si NO existe `fecha_ultimo_acceso`, inicializa `racha_dias` en 1
+- Muestra en `<h3 id="racha_dias">` el texto: `"Racha actual: X días 🔥"`
+- Guarda tanto `racha_dias` como `fecha_ultimo_acceso` (fecha actual en ISO)
+*/
+
+let fecha_ultimo_acceso = localStorage.getItem("fecha_ultimo_acceso")
+let racha_dias = localStorage.getItem("racha_dias")
+
+console.log(`Fecha último acceso es de ${fecha_ultimo_acceso}`)
+console.log(`"fecha_ultimo_acceso es de tipo ${typeof fecha_ultimo_acceso}`)
+
+if(fecha_ultimo_acceso) {
+    let ultimo_acceso = new Date(fecha_ultimo_acceso)
+    let fecha_actual = new Date()
+    if(fecha_actual.getDate() - ultimo_acceso.getDate() === 1) {
+        console.log(`La racha de dias es ${racha_dias} y su tipo es ${typeof racha_dias}`)
+        racha_dias += 1
+        localStorage.setItem("racha_dias", racha_dias)
+    }
+} else {
+    let racha_dias = 1
+    document.getElementById("racha_dias").textContent = `Racha actual: ${racha_dias}`
+    localStorage.setItem("racha_dias", racha_dias)
+}
+
+console.log(`Fecha actual es ${fecha_actual} y es de tipo ${typeof fecha_actual}`)
+localStorage.setItem("fecha_ultimo_acceso", fecha_actual)
+
+/*
+     **BOTÓN REINICIAR PROGRESO**
+- Añade un `addEventListener` al botón con id `btn_reiniciar`
+- Al hacer clic:
+  - Limpia localStorage y sessionStorage
+  - Muestra un alert: "Progreso reiniciado. Se recargará la página."
+  - Recarga la página con `location.reload()`
+ */
+
 
