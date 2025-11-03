@@ -46,7 +46,7 @@ let visitas_sesion = sessionStorage.getItem("visitas_sesion")
 
 visitas_sesion = visitas_sesion
     ? parseInt(visitas_sesion) + 1
-    : visitas_sesion = 1
+    : 1
 
 document.getElementById("visitas_sesion").textContent = `Recarga número ${visitas_sesion} de la sesión`
 
@@ -67,7 +67,7 @@ sessionStorage.setItem("visitas_sesion", visitas_sesion)
 
 entrenamientos_totales = entrenamientos_totales
     ? parseInt(entrenamientos_totales)
-    : entrenamientos_totales = 0
+    : 0
 
 if(visitas_sesion === 1) entrenamientos_totales+=1
 
@@ -99,7 +99,7 @@ localStorage.setItem("ultimo_entrenamiento", fecha_actual.toISOString())
      **GRUPO MUSCULAR FAVORITO** (localStorage)
 - Si existe `musculo_favorito`, muéstralo con un alert
 - Si NO existe, pídelo con un `prompt` (ejemplo: "pecho", "espalda", "piernas", etc.)
-- Muestra en `<h3 id="musculo_favorito">` el texto: `"Grupo muscular favorito: [MUSCULO]"`
+- Muestra en `<h3 id="musculo_favorito">` el texto: `"Grupo muscular favorito: [MÚSCULO]"`
 - Guarda el valor en localStorage
 
  */
@@ -120,7 +120,7 @@ localStorage.setItem("musculo_favorito", musculo_favorito)
 - Si existe `fecha_ultimo_acceso`:
   - Conviértela a Date
   - Calcula la diferencia en días con la fecha actual
-  - Si la diferencia es 1 día o menos (entrenó ayer o hoy), incrementa `racha_dias`
+  - Si la diferencia es 1 día o menos (entrenó ayer u hoy), incrementa `racha_dias`
   - Si la diferencia es mayor a 1 día, reinicia `racha_dias` a 1
 - Si NO existe `fecha_ultimo_acceso`, inicializa `racha_dias` en 1
 - Muestra en `<h3 id="racha_dias">` el texto: `"Racha actual: X días 🔥"`
@@ -129,34 +129,45 @@ localStorage.setItem("musculo_favorito", musculo_favorito)
 
 let fecha_ultimo_acceso = localStorage.getItem("fecha_ultimo_acceso")
 let racha_dias = localStorage.getItem("racha_dias")
+racha_dias = racha_dias ? parseInt(racha_dias) : 0 // Conversión a número
 
-console.log(`Fecha último acceso es de ${fecha_ultimo_acceso}`)
-console.log(`"fecha_ultimo_acceso es de tipo ${typeof fecha_ultimo_acceso}`)
+console.log(`Fecha último acceso es de ${fecha_ultimo_acceso} y de tipo ${typeof fecha_ultimo_acceso}`)
 
 if(fecha_ultimo_acceso) {
-    let ultimo_acceso = new Date(fecha_ultimo_acceso)
     let fecha_actual = new Date()
-    if(fecha_actual.getDate() - ultimo_acceso.getDate() === 1) {
-        console.log(`La racha de dias es ${racha_dias} y su tipo es ${typeof racha_dias}`)
-        racha_dias += 1
-        localStorage.setItem("racha_dias", racha_dias)
+    let ultimo_acceso = new Date(fecha_ultimo_acceso)
+    let diferencia_ms = fecha_actual - ultimo_acceso
+    let diferencia_dias = Math.floor(diferencia_ms / (1000*60*60*24))
+    if(diferencia_dias === 1 ) {     // Si entrenó ayer u hoy
+        racha_dias++
+        console.log("✅ Racha incrementada")
+    } else {
+        racha_dias = 1
+        console.log("❌ Racha reiniciada")
     }
 } else {
-    let racha_dias = 1
-    document.getElementById("racha_dias").textContent = `Racha actual: ${racha_dias}`
-    localStorage.setItem("racha_dias", racha_dias)
+    racha_dias = 1
+    console.log("🆕 Primera racha")
 }
 
-console.log(`Fecha actual es ${fecha_actual} y es de tipo ${typeof fecha_actual}`)
-localStorage.setItem("fecha_ultimo_acceso", fecha_actual)
+document.getElementById("racha_dias").textContent = `Racha actual de ${racha_dias} días`
+localStorage.setItem("racha_dias", racha_dias)
+
+console.log(`Fecha actual es ${fecha_actual.toISOString()} y es de tipo ${typeof fecha_actual}`)
+localStorage.setItem("fecha_ultimo_acceso", fecha_actual.toISOString())
 
 /*
      **BOTÓN REINICIAR PROGRESO**
-- Añade un `addEventListener` al botón con id `btn_reiniciar`
+- Añade un `addEventListener` al botón con ID `btn_reiniciar`
 - Al hacer clic:
   - Limpia localStorage y sessionStorage
   - Muestra un alert: "Progreso reiniciado. Se recargará la página."
   - Recarga la página con `location.reload()`
  */
 
-
+document.getElementById("btn_reiniciar").addEventListener("click", () => {
+    localStorage.clear()
+    sessionStorage.clear()
+    alert("Progreso reiniciado. Se recargará la página")
+    location.reload()
+})
